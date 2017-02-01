@@ -41,12 +41,66 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define SENSOR_1_Pin GPIO_PIN_0
+#define SENSOR_1_GPIO_Port GPIOC
+#define SENSOR_2_Pin GPIO_PIN_1
+#define SENSOR_2_GPIO_Port GPIOC
+#define SENSOR_3_Pin GPIO_PIN_2
+#define SENSOR_3_GPIO_Port GPIOC
+#define SENSOR_4_Pin GPIO_PIN_3
+#define SENSOR_4_GPIO_Port GPIOC
+#define SENSOR_5_Pin GPIO_PIN_0
+#define SENSOR_5_GPIO_Port GPIOA
+#define SENSOR_6_Pin GPIO_PIN_1
+#define SENSOR_6_GPIO_Port GPIOA
+#define SENSOR_7_Pin GPIO_PIN_2
+#define SENSOR_7_GPIO_Port GPIOA
+#define SENSOR_8_Pin GPIO_PIN_3
+#define SENSOR_8_GPIO_Port GPIOA
+#define SENSOR_9_Pin GPIO_PIN_4
+#define SENSOR_9_GPIO_Port GPIOA
+#define SENSOR_10_Pin GPIO_PIN_5
+#define SENSOR_10_GPIO_Port GPIOA
+#define SENSOR_11_Pin GPIO_PIN_6
+#define SENSOR_11_GPIO_Port GPIOA
+#define BATTERY_Pin GPIO_PIN_1
+#define BATTERY_GPIO_Port GPIOB
+#define BUTTON_2_Pin GPIO_PIN_12
+#define BUTTON_2_GPIO_Port GPIOB
+#define BUTTON_1_Pin GPIO_PIN_13
+#define BUTTON_1_GPIO_Port GPIOB
+#define LED_2_Pin GPIO_PIN_14
+#define LED_2_GPIO_Port GPIOB
+#define LED_1_Pin GPIO_PIN_15
+#define LED_1_GPIO_Port GPIOB
+#define MOTOR_L_ENC_2_Pin GPIO_PIN_6
+#define MOTOR_L_ENC_2_GPIO_Port GPIOC
+#define MOTOR_L_ENC_1_Pin GPIO_PIN_7
+#define MOTOR_L_ENC_1_GPIO_Port GPIOC
+#define MOTOR_L_DIR_2_Pin GPIO_PIN_8
+#define MOTOR_L_DIR_2_GPIO_Port GPIOC
+#define MOTOR_L_DIR_1_Pin GPIO_PIN_9
+#define MOTOR_L_DIR_1_GPIO_Port GPIOC
+#define MOTOR_L_PWM_Pin GPIO_PIN_8
+#define MOTOR_L_PWM_GPIO_Port GPIOA
+#define MOTOR_R_PWM_Pin GPIO_PIN_11
+#define MOTOR_R_PWM_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define EDF_PWM_Pin GPIO_PIN_15
+#define EDF_PWM_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define MOTOR_R_DIR_2_Pin GPIO_PIN_4
+#define MOTOR_R_DIR_2_GPIO_Port GPIOB
+#define MOTOR_R_DIR_1_Pin GPIO_PIN_5
+#define MOTOR_R_DIR_1_GPIO_Port GPIOB
+#define MOTOR_R_ENC_2_Pin GPIO_PIN_6
+#define MOTOR_R_ENC_2_GPIO_Port GPIOB
+#define MOTOR_R_ENC_1_Pin GPIO_PIN_7
+#define MOTOR_R_ENC_1_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
