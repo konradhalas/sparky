@@ -239,6 +239,23 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
 
 }
 
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
+{
+
+  if(htim_base->Instance==TIM10)
+  {
+  /* USER CODE BEGIN TIM10_MspInit 0 */
+
+  /* USER CODE END TIM10_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM10_CLK_ENABLE();
+  /* USER CODE BEGIN TIM10_MspInit 1 */
+
+  /* USER CODE END TIM10_MspInit 1 */
+  }
+
+}
+
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 {
 
@@ -353,6 +370,23 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* htim_encoder)
 
   /* USER CODE END TIM4_MspDeInit 1 */
   }
+
+}
+
+void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
+{
+
+  if(htim_base->Instance==TIM10)
+  {
+  /* USER CODE BEGIN TIM10_MspDeInit 0 */
+
+  /* USER CODE END TIM10_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM10_CLK_DISABLE();
+  }
+  /* USER CODE BEGIN TIM10_MspDeInit 1 */
+
+  /* USER CODE END TIM10_MspDeInit 1 */
 
 }
 

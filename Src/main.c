@@ -36,6 +36,8 @@
 
 /* USER CODE BEGIN Includes */
 
+#include "core.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -45,14 +47,15 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim10;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define MESSAGE_LENGTH 20
+#define COMMAND_LENGTH 20
 
-uint8_t received[MESSAGE_LENGTH];
+uint8_t received[COMMAND_LENGTH];
 
 /* USER CODE END PV */
 
@@ -66,6 +69,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM10_Init(void);
                                     
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -80,12 +84,13 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 int i = 0;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	HAL_UART_Receive_IT(&huart1, received, MESSAGE_LENGTH);
+	handleCommand(received);
+	HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (huart->ErrorCode == HAL_UART_ERROR_ORE) {
-		HAL_UART_Receive_IT(&huart1, received, MESSAGE_LENGTH);
+		HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
 	}
 }
 
@@ -114,9 +119,12 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+  MX_TIM10_Init();
 
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1, received, MESSAGE_LENGTH);
+  HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
 
   /* USER CODE END 2 */
 
@@ -235,9 +243,9 @@ static void MX_TIM1_Init(void)
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
 
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
+  htim1.Init.Prescaler = 4999;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 0;
+  htim1.Init.Period = 99;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
@@ -386,6 +394,22 @@ static void MX_TIM4_Init(void)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+/* TIM10 init function */
+static void MX_TIM10_Init(void)
+{
+
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 0;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 0;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
     Error_Handler();
   }
