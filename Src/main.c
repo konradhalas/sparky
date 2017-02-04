@@ -53,9 +53,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define COMMAND_LENGTH 20
-
-uint8_t received[COMMAND_LENGTH];
 
 /* USER CODE END PV */
 
@@ -81,16 +78,25 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-int i = 0;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	handleCommand(received);
-	HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
+	handleCommand();
+	HAL_UART_Receive_IT(&huart1, commandsBuffor, COMMAND_LENGTH);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+	sendPendingMessages(huart);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+ if (htim->Instance == MOTORS_TIM_ENC) {
+	 handleMotorsEncodersTimerPeriodElapsed();
+ }
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (huart->ErrorCode == HAL_UART_ERROR_ORE) {
-		HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
+		HAL_UART_Receive_IT(&huart1, commandsBuffor, COMMAND_LENGTH);
 	}
 }
 
@@ -122,9 +128,12 @@ int main(void)
   MX_TIM10_Init();
 
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1, received, COMMAND_LENGTH);
+  HAL_UART_Receive_IT(&huart1, commandsBuffor, COMMAND_LENGTH);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+  HAL_TIM_Base_Start_IT(&htim10);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 
   /* USER CODE END 2 */
 
@@ -340,9 +349,9 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 0;
+  htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -375,9 +384,9 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 0;
+  htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -405,9 +414,9 @@ static void MX_TIM10_Init(void)
 {
 
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 0;
+  htim10.Init.Prescaler = 9999;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 0;
+  htim10.Init.Period = 4999;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
