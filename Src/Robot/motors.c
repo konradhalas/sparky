@@ -1,20 +1,24 @@
 #include <stdlib.h>
-#include <string.h>
 
 #include "stm32f4xx_hal.h"
 
-#include "main.h"
-#include "core.h"
+#include "motors.h"
+#include "messages.h"
 
-extern UART_HandleTypeDef huart1;
+#define MOTOR_LEFT_TIM_CCR TIM1->CCR1
+#define MOTOR_RIGHT_TIM_CCR TIM1->CCR4
+#define MOTOR_LEFT_TIM_ENC_CNT TIM3->CNT
+#define MOTOR_RIGHT_TIM_ENC_CNT TIM4->CNT
 
-#define MESSAGES_QUEUE_ELEMENTS 100
-#define MESSAGES_QUEUE_SIZE (MESSAGES_QUEUE_ELEMENTS + 1)
+#define ENCODER_MAX_SPEED 20000
+#define ENCODER_MAX_VALUE 65535
 
-char messagesQueue[MESSAGES_QUEUE_SIZE][MESSAGE_LENGTH];
-int messagesQueueIn = 0, messagesQueueOut = 0;
+#define EDF_TIM_CCR TIM2->CCR1
 
-uint8_t commandsBuffor[COMMAND_LENGTH] = {};
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim10;
 
 int isReadModeEnabled = 1;
 
@@ -22,60 +26,6 @@ int motorLeftEncoderPreviousCount = -1;
 int motorRightEncoderPreviousCount = -1;
 int motorLeftSpeed = 0;
 int motorRightSpeed = 0;
-
-void handleCommand() {
-	if (commandsBuffor[0] == START_STOP_COMMAND) {
-		toggleMotor(MOTOR_LEFT);
-	}
-}
-
-void sendMessage(char *message) {
-	addMessageToQueue(message);
-	sendPendingMessages(&huart1);
-}
-
-void sendPendingMessages(UART_HandleTypeDef *huart) {
-	if (hasMessagesInQueue() && HAL_UART_GetState(huart) != HAL_UART_STATE_BUSY_TX && HAL_UART_GetState(huart) != HAL_UART_STATE_BUSY_TX_RX) {
-		char *message = NULL;
-		if (getMessageFromQueue(&message) != 1 && message != NULL) {
-			HAL_UART_Transmit_IT(huart, (uint8_t*)message, strlen(message));
-		}
-	}
-}
-
-int hasMessagesInQueue() {
-	if (messagesQueueIn != messagesQueueOut) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int addMessageToQueue(char *message)
-{
-    if(messagesQueueIn == (( messagesQueueOut - 1 + MESSAGES_QUEUE_SIZE) % MESSAGES_QUEUE_SIZE)) {
-        return -1;
-    }
-
-    strcpy(messagesQueue[messagesQueueIn], message);
-
-    messagesQueueIn = (messagesQueueIn + 1) % MESSAGES_QUEUE_SIZE;
-
-    return 0;
-}
-
-int getMessageFromQueue(char **message)
-{
-    if(messagesQueueIn == messagesQueueOut) {
-        return -1;
-    }
-
-    *message = messagesQueue[messagesQueueOut];
-
-    messagesQueueOut = (messagesQueueOut + 1) % MESSAGES_QUEUE_SIZE;
-
-    return 0;
-}
 
 void toggleMotor(int motor) {
 	if (getMotorSetpointSpeed(motor) == 0) {
@@ -109,12 +59,6 @@ int calculateMotorSpeed(int currentCount, int previousCount) {
 	 return speed;
 }
 
-void sendMotorsSpeedMessage() {
-	char message[MESSAGE_LENGTH];
-	snprintf(message, MESSAGE_LENGTH, "M %d %d\n", motorLeftSpeed, motorRightSpeed);
-	sendMessage(message);
-}
-
 void handleMotorsEncodersTimerPeriodElapsed() {
 	if (motorLeftEncoderPreviousCount != -1) {
 		 motorLeftSpeed = calculateMotorSpeed(MOTOR_LEFT_TIM_ENC_CNT, motorLeftEncoderPreviousCount);
@@ -127,4 +71,18 @@ void handleMotorsEncodersTimerPeriodElapsed() {
 	 if (isReadModeEnabled == 1) {
 		 sendMotorsSpeedMessage();
 	 }
+}
+
+void sendMotorsSpeedMessage() {
+	char message[MESSAGE_LENGTH];
+	snprintf(message, MESSAGE_LENGTH, "M %d %d\n", motorLeftSpeed, motorRightSpeed);
+	sendMessage(message);
+}
+
+void initializeMotors() {
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+	HAL_TIM_Base_Start_IT(&htim10);
+	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+	HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 }
