@@ -6,10 +6,14 @@
 #define FORWARD 1
 #define BACKWARD 2
 
-void setMotorSpeed(int motor, int direction, int speed);
-int getMotorSetpointSpeed(int motor);
+// PUBLIC
+void initializeMotors();
 void toggleMotor(int motor);
+void setMotorSpeed(int motor, int direction, int speed);
 void handleMotorsEncodersTimerPeriodElapsed();
+
+// PRIVATE
+int getMotorSetpointSpeed(int motor);
 int calculateSpeed(int currentCount, int previousCount);
 void sendMotorsSpeedMessage();
 

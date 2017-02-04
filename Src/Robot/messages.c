@@ -15,7 +15,7 @@ int messagesQueueIn = 0, messagesQueueOut = 0;
 
 void sendMessage(char *message) {
 	addMessageToQueue(message);
-	sendPendingMessages(&huart1);
+	sendPendingMessages();
 }
 
 void sendPendingMessages() {
