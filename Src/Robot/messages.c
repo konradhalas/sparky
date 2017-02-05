@@ -19,9 +19,9 @@ void sendMessage(char *message) {
 }
 
 void sendPendingMessages() {
-	if (hasMessagesInQueue() && HAL_UART_GetState(&huart1) != HAL_UART_STATE_BUSY_TX && HAL_UART_GetState(&huart1) != HAL_UART_STATE_BUSY_TX_RX) {
+	if (hasMessagesInQueue() && huart1.gState == HAL_UART_STATE_READY) {
 		char *message = NULL;
-		if (getMessageFromQueue(&message) != 1 && message != NULL) {
+		if (getMessageFromQueue(&message) != -1) {
 			HAL_UART_Transmit_IT(&huart1, (uint8_t*)message, strlen(message));
 		}
 	}

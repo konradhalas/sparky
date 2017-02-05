@@ -12,7 +12,7 @@ uint8_t commandsBuffor[COMMAND_LENGTH] = {};
 
 void handleCommand() {
 	if (commandsBuffor[0] == START_STOP_COMMAND) {
-		toggleMotor(MOTOR_LEFT);
+		toggleMotor(MOTOR_RIGHT);
 	}
 }
 

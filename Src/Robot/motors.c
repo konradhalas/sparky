@@ -4,6 +4,7 @@
 
 #include "motors.h"
 #include "messages.h"
+#include "state.h"
 
 #define MOTOR_LEFT_TIM_CCR TIM1->CCR1
 #define MOTOR_RIGHT_TIM_CCR TIM1->CCR4
@@ -19,8 +20,6 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim10;
-
-int isReadModeEnabled = 1;
 
 int motorLeftEncoderPreviousCount = -1;
 int motorRightEncoderPreviousCount = -1;
@@ -68,7 +67,7 @@ void handleMotorsEncodersTimerPeriodElapsed() {
 	 }
 	 motorLeftEncoderPreviousCount = MOTOR_LEFT_TIM_ENC_CNT;
 	 motorRightEncoderPreviousCount = MOTOR_RIGHT_TIM_ENC_CNT;
-	 if (isReadModeEnabled == 1) {
+	 if (isReadModeEnabled()) {
 		 sendMotorsSpeedMessage();
 	 }
 }

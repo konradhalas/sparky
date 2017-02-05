@@ -1,7 +1,7 @@
 #ifndef _MESSAGES_H_
 #define _MESSAGES_H_
 
-#define MESSAGE_LENGTH 20
+#define MESSAGE_LENGTH 60
 
 // PUBLIC
 void sendMessage(char *message);
