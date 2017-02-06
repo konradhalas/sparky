@@ -1,4 +1,4 @@
-#import "state.h"
+#include "state.h"
 
 int readMode = 1;
 

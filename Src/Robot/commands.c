@@ -2,6 +2,7 @@
 
 #include "commands.h"
 #include "motors.h"
+#include "edf.h"
 
 #define COMMAND_LENGTH 20
 #define START_STOP_COMMAND 'T'
